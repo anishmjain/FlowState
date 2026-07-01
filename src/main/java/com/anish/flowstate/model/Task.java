@@ -1,3 +1,5 @@
+package com.anish.flowstate.model;
+
 public class Task{
     public int id;
     public String title;

@@ -11,7 +11,7 @@
 	<groupId>com.anish.flowstate</groupId>
 	<artifactId>FlowState</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name/>
 	<description/>
 	<url/>
@@ -21,9 +21,6 @@
 	<developers>
 		<developer/>
 	</developers>
-    <modules>
-        <module>docs</module>
-    </modules>
     <scm>
 		<connection/>
 		<developerConnection/>
