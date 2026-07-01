@@ -245,3 +245,65 @@ It bootstraps the Spring application by creating the Application Context, loadin
 - Return JSON from the first endpoint.
 - Learn @RestController.
 - Learn @GetMapping.
+
+---
+
+# Real World Debugging #1
+
+## Problem
+
+The application failed to start.
+
+Error:
+
+```
+Could not find or load main class
+```
+
+Additionally:
+
+- Auto imports were not working.
+- IntelliJ inspections appeared disabled.
+- Spring annotations were not resolving correctly.
+
+---
+
+## Investigation
+
+Verified:
+
+- Java installation
+- Maven build
+- Package declarations
+- Project structure
+- Run configuration
+
+The project successfully compiled using Maven.
+
+This indicated that the issue was not with the source code.
+
+---
+
+## Root Cause
+
+The project packaging was incorrectly set to:
+
+```xml
+<packaging>pom</packaging>
+```
+
+A Spring Boot application should be packaged as:
+
+```xml
+<packaging>jar</packaging>
+```
+
+or omit the packaging tag entirely since `jar` is Maven's default.
+
+---
+
+## Lesson Learned
+
+Always verify the build configuration before assuming the application code is incorrect.
+
+A successful investigation eliminates possibilities one by one instead of randomly changing files.
