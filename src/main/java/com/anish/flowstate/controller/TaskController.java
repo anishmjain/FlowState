@@ -7,11 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TaskController{
+    private final TaskService taskService;
 
-    private TaskService service = new TaskService();
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
     @GetMapping
     public Task getTask() {
-        return service.getTask();
+        return taskService.getTask();
 
     }
 }
