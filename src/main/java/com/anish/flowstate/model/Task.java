@@ -1,13 +1,25 @@
 package com.anish.flowstate.model;
 
-public class Task{
-    public int id;
-    public String title;
-    private String description;
-    private boolean completed;
+import jakarta.persistence.*;
 
-    public Task(int id, String title, String description, boolean completed) {
-        this.id = id;
+@Entity
+@Table(name = "FS_TASKS")
+public class Task{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "FS_ID")
+    private  Integer id;
+
+    @Column(name = "FS_TITLE")
+    public String title;
+
+    @Column(name = "FS_DESCRIPTION")
+    private String description;
+
+    @Column(name = "IS_COMPLETED")
+    private Boolean  completed;
+
+    public Task(String title, String description, Boolean  completed) {
         this.title = title;
         this.description = description;
         this.completed = completed;
@@ -16,11 +28,11 @@ public class Task{
     public Task() {
     }
 
-    public int getId() {
+    public Integer  getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer  id) {
         this.id = id;
     }
 
@@ -40,11 +52,11 @@ public class Task{
         this.description = description;
     }
 
-    public boolean isCompleted() {
+    public Boolean  isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setCompleted(Boolean  completed) {
         this.completed = completed;
     }
 

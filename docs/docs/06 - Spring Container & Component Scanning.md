@@ -1,6 +1,6 @@
 # FlowState Documentation
 
-# Chapter 5 - Dependency Injection & Spring Beans
+# Chapter 6 - Spring Container & Component Scanning
 
 **Sprint:** 3
 
@@ -8,303 +8,307 @@
 
 # Objective
 
-Understand how Spring manages objects, injects dependencies, and removes the need to manually create objects using the `new` keyword.
+Understand how Spring discovers application components, creates Beans, and manages them inside the Spring Container.
 
 ---
 
-# What is a Bean?
+# What is the Spring Container?
 
-A Bean is an object whose lifecycle is managed by the Spring Container.
+The Spring Container is responsible for creating, managing, and providing all Spring Beans.
+
+The implementation commonly used in Spring Boot applications is the **ApplicationContext**.
+
+Think of it as the central manager of the application.
+
+Responsibilities:
+
+- Create Beans
+- Store Beans
+- Inject Beans
+- Manage Bean lifecycle
+- Resolve dependencies
+
+---
+
+# What is ApplicationContext?
+
+The ApplicationContext is Spring's IoC (Inversion of Control) Container.
+
+Every Bean inside the application is managed through it.
+
+When the application starts:
+
+```
+main()
+
+↓
+
+SpringApplication.run()
+
+↓
+
+ApplicationContext Created
+
+↓
+
+Component Scan Begins
+
+↓
+
+Beans Created
+
+↓
+
+Dependencies Injected
+
+↓
+
+Application Ready
+```
+
+Without the ApplicationContext, Dependency Injection would not exist.
+
+---
+
+# Component Scanning
+
+Spring automatically searches the application's packages for classes annotated with Spring stereotypes.
 
 Example:
 
+```
+com.anish.flowstate
+
+├── controller
+├── service
+├── repository
+├── config
+└── model
+```
+
+Spring scans every package below the package containing:
+
 ```java
+@SpringBootApplication
+```
+
+---
+
+# What does Spring look for?
+
+During Component Scanning Spring searches for:
+
+```java
+@Component
+
 @Service
-public class TaskService {
 
-}
+@Repository
+
+@Controller
+
+@RestController
 ```
 
-Spring automatically creates an object of this class and manages it throughout the application's lifetime.
-
-A normal Java object:
-
-```java
-Task task = new Task();
-```
-
-is **not** a Spring Bean because Spring did not create or manage it.
+Whenever one of these annotations is found, Spring creates a Bean.
 
 ---
 
-# What is Dependency Injection?
+# Why was TaskService discovered?
 
-Dependency Injection (DI) is the process where Spring provides the required objects (dependencies) to a class instead of the class creating them itself.
+TaskService satisfied three conditions:
 
-Without DI:
+- Located inside the component scan package.
+- Annotated with `@Service`.
+- `@Service` is a specialization of `@Component`.
 
-```java
-private TaskService taskService = new TaskService();
-```
-
-With DI:
-
-```java
-private final TaskService taskService;
-
-public TaskController(TaskService taskService) {
-    this.taskService = taskService;
-}
-```
-
-The controller no longer creates the object.
-
-It simply declares what it needs.
+Therefore Spring created a TaskService Bean automatically.
 
 ---
 
-# What is a Dependency?
+# What is @Component?
 
-A dependency is another object that a class requires to perform its work.
+`@Component` is the base stereotype annotation.
+
+The following annotations are specialized versions of `@Component`:
+
+```
+@Component
+
+├── @Service
+
+├── @Repository
+
+├── @Controller
+
+└── @RestController
+```
+
+Each specialization gives additional semantic meaning while still being discovered during Component Scanning.
+
+---
+
+# Startup Sequence
+
+```
+Application Starts
+
+↓
+
+SpringApplication.run()
+
+↓
+
+ApplicationContext Created
+
+↓
+
+Component Scan
+
+↓
+
+TaskService Found
+
+↓
+
+TaskController Found
+
+↓
+
+Beans Created
+
+↓
+
+Dependencies Injected
+
+↓
+
+Tomcat Starts
+
+↓
+
+Application Ready
+```
+
+---
+
+# Package Structure Matters
+
+Spring scans downward from the package containing:
+
+```java
+@SpringBootApplication
+```
 
 Example:
 
 ```
-TaskController
-      ↓
-TaskService
+com.anish.flowstate
 ```
 
-`TaskController` depends on `TaskService`.
-
----
-
-# Constructor Injection
-
-Constructor Injection is the recommended way of injecting dependencies in Spring.
-
-Example:
-
-```java
-private final TaskService taskService;
-
-public TaskController(TaskService taskService) {
-    this.taskService = taskService;
-}
-```
-
-Benefits:
-
-- Mandatory dependencies
-- Immutable (`final`) fields
-- Easier testing
-- Clear object requirements
-
----
-
-# What is Inversion of Control (IoC)?
-
-Before Spring:
+Automatically scanned:
 
 ```
-Controller
+com.anish.flowstate.controller
 
-↓
+com.anish.flowstate.service
 
-Creates TaskService
-
-↓
-
-Uses TaskService
+com.anish.flowstate.repository
 ```
 
-After Spring:
+Not automatically scanned:
 
 ```
-Spring Container
+com.other.email
 
-↓
-
-Creates TaskService
-
-↓
-
-Injects TaskService
-
-↓
-
-Controller Uses TaskService
+com.random.test
 ```
 
-The responsibility of creating objects moves from the application code to Spring.
-
-This inversion of responsibility is called **Inversion of Control (IoC).**
-
----
-
-# Request Flow
-
-```
-Browser
-
-↓
-
-DispatcherServlet
-
-↓
-
-TaskController
-
-↓
-
-TaskService Bean
-
-↓
-
-Task Object
-
-↓
-
-Jackson
-
-↓
-
-JSON
-
-↓
-
-Browser
-```
-
----
-
-# Object Ownership
-
-Without Spring:
-
-```
-Controller
-
-↓
-
-new TaskService()
-```
-
-The Controller owns the object.
-
-With Spring:
-
-```
-Controller
-
-↓
-
-"I need TaskService."
-
-↓
-
-Spring Container
-
-↓
-
-Provides TaskService Bean
-```
-
-Spring owns the object lifecycle.
-
----
-
-# Why is Dependency Injection useful?
-
-Dependency Injection separates **object creation** from **object usage**.
-
-Instead of creating dependencies manually, classes simply declare what they require.
-
-This leads to:
-
-- Lower coupling
-- Better maintainability
-- Easier testing
-- Reusable components
-- Cleaner architecture
+These packages require explicit configuration using `@ComponentScan`.
 
 ---
 
 # Engineering Notes
 
-Spring does not replace Java.
+Component Scanning removes the need to manually register every Bean.
 
-Java teaches us how to create objects.
+Instead of explicitly creating objects, developers describe application components using annotations.
 
-Spring manages those objects after they are created.
-
-Every Spring class should describe **what it needs**, not **how to build what it needs**.
+Spring builds the application automatically.
 
 ---
 
 # Common Mistakes
 
-❌ Creating Service objects using `new`.
+❌ Placing classes outside the component scan package.
 
-❌ Using field injection for every dependency.
+❌ Forgetting stereotype annotations.
 
-❌ Thinking Beans and Java Objects are the same thing.
+❌ Assuming every Java object becomes a Bean.
 
-❌ Believing Dependency Injection creates new objects for every request.
+❌ Confusing ApplicationContext with Dependency Injection.
 
 ---
 
 # Interview Notes
 
-### What is a Spring Bean?
+### What is the Spring Container?
 
-A Spring Bean is an object whose lifecycle is managed by the Spring Container.
-
----
-
-### What is Dependency Injection?
-
-Dependency Injection is the process of supplying required dependencies to a class instead of allowing the class to create them.
+The Spring Container is responsible for creating, managing and injecting Spring Beans.
 
 ---
 
-### What is Inversion of Control?
+### What is ApplicationContext?
 
-Inversion of Control is the principle where the framework manages object creation and lifecycle instead of the application code.
+ApplicationContext is Spring's implementation of the IoC Container.
 
 ---
 
-### Why is Constructor Injection preferred?
+### What is Component Scanning?
 
-- Encourages immutability
-- Makes dependencies explicit
-- Simplifies unit testing
-- Prevents partially initialized objects
+The process where Spring searches packages for annotated classes and automatically creates Beans.
+
+---
+
+### Difference between @Component and @Service?
+
+`@Component` is the generic stereotype.
+
+`@Service` is a specialization indicating that the class contains business logic.
+
+Both become Spring Beans.
 
 ---
 
 # FlowState Intuition 💡
 
-Imagine every class says:
+Imagine Spring is a company.
 
-> "These are the things I need."
+ApplicationContext is the CEO.
 
-Spring replies:
+Component Scan is HR.
 
-> "Got it. I'll create them, manage them, and hand them to you."
+Every class wearing a Spring annotation gets hired as an employee (Bean).
 
-Classes should declare their dependencies, not construct them.
+When one employee says,
+
+> "I need a TaskService."
+
+the CEO replies,
+
+> "Already hired one. Go work together."
+
+No employee hires another employee directly.
 
 ---
 
 # Lessons Learned
 
-- Beans are Java objects managed by Spring.
-- Dependency Injection removes the need for manual object creation.
-- Constructor Injection is the preferred approach.
-- Spring owns the lifecycle of Beans.
-- Dependency Injection separates object creation from object usage.
-- IoC shifts responsibility for object creation from application code to the Spring framework.
+- ApplicationContext is the heart of every Spring Boot application.
+- Component Scanning discovers annotated classes automatically.
+- Spring creates Beans during application startup.
+- Only classes inside the component scan package are automatically discovered.
+- `@Service`, `@Repository`, `@Controller`, and `@RestController` are all specialized forms of `@Component`.
 
 ---
 
