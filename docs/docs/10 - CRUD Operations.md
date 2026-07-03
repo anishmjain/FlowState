@@ -1,4 +1,4 @@
-# 11 - CRUD Operations.md
+# 10 - CRUD Operations.md
 
 # CRUD Operations using Spring Data JPA
 
