@@ -1,6 +1,8 @@
 package com.anish.flowstate.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "FS_TASKS")
@@ -10,9 +12,12 @@ public class Task{
     @Column(name = "FS_ID")
     private  Integer id;
 
+    @NotBlank(message = "Title cannot be empty.")
+    @Size(max = 100, message = "Title cannot exceed 100 characters.")
     @Column(name = "FS_TITLE")
     public String title;
-
+    @NotBlank(message = "Description cannot be empty.")
+    @Size(max = 500, message = "Description cannot exceed 500 characters.")
     @Column(name = "FS_DESCRIPTION")
     private String description;
 

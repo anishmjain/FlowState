@@ -2,6 +2,7 @@ package com.anish.flowstate.controller;
 
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class TaskController{
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
         Task createdTask = taskService.createTask(task);
         return ResponseEntity.status(201).body(createdTask);
     }
@@ -33,7 +34,7 @@ public class TaskController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Integer id,
+    public ResponseEntity<Task> updateTask(@Valid @PathVariable Integer id,
                            @RequestBody Task task){
         return ResponseEntity.ok(taskService.updateTask(id, task));
     }
