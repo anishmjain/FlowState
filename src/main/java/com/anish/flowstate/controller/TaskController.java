@@ -2,6 +2,7 @@ package com.anish.flowstate.controller;
 
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.service.TaskService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,25 @@ public class TaskController{
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task createdTask = taskService.createTask(task);
+        return ResponseEntity.status(201).body(createdTask);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTaskById(@PathVariable Integer id) {
+        return ResponseEntity.ok(taskService.getTaskById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Integer id,
+                           @RequestBody Task task){
+        return ResponseEntity.ok(taskService.updateTask(id, task));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Integer id){
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 }
