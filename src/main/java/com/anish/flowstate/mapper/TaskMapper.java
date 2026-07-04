@@ -28,9 +28,7 @@ public class TaskMapper {
 
 
     public static void updateEntity(Task existingTask, Task updatedTask) {
-
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
-
     }
 }
