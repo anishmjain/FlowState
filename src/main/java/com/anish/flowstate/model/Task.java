@@ -24,6 +24,10 @@ public class Task{
     @Column(name = "IS_COMPLETED")
     private Boolean  completed;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OWNER_ID" /*, nullable = false */)
+    private User owner;
+
     public Task(String title, String description, Boolean  completed) {
         this.title = title;
         this.description = description;
@@ -63,6 +67,18 @@ public class Task{
 
     public void setCompleted(Boolean  completed) {
         this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     @java.lang.Override

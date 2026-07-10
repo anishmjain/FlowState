@@ -2,6 +2,8 @@ package com.anish.flowstate.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "FS_USERS")
 public class User {
@@ -16,6 +18,9 @@ public class User {
     private String password;
 
     private String role;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Task> tasks;
 
     public User() {}
 
@@ -49,5 +54,13 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }
