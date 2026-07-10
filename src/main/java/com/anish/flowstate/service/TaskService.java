@@ -21,27 +21,27 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public TaskService(TaskRepository repository, UserRepository userRepository) {
-        this.taskRepository = repository;
-        this.userRepository = userRepository;
+    public TaskService(TaskRepository taskRepository, UserService userService) {
+        this.taskRepository = taskRepository;
+        this.userService = userService;
     }
 
     public List<Task> getAllTasks() {
-        User owner = getCurrentUser();
+        User owner = userService.getCurrentUser();
         logger.info("Fetching tasks for {}", owner.getUsername());
         return taskRepository.findByOwner(owner);
     }
 
     public Task createTask(Task task) {
-        User owner = getCurrentUser();
+        User owner = userService.getCurrentUser();
         task.setOwner(owner);
         return taskRepository.save(task);
     }
 
     public Task getTaskById(Integer id) {
-        User owner = getCurrentUser();
+        User owner = userService.getCurrentUser();
         logger.info("Fetching task {} for {}", id, owner.getUsername());
         return taskRepository.findByIdAndOwner(id, owner)
                 .orElseThrow(() -> new TaskNotFoundException(id));
@@ -55,6 +55,7 @@ public class TaskService {
     }
 
     public void deleteTask(Integer id){
+        logger.info("Deleting task {}", id);
         Task task = getOwnedTask(id);
         taskRepository.delete(task);
     }
@@ -65,17 +66,8 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    private User getCurrentUser() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String username = userDetails.getUsername();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
-    }
-
     private Task getOwnedTask(Integer id) {
-        User owner = getCurrentUser();
+        User owner = userService.getCurrentUser();
         return taskRepository
                 .findByIdAndOwner(id, owner)
                 .orElseThrow(() -> new TaskNotFoundException(id));

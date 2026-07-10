@@ -1,10 +1,14 @@
 package com.anish.flowstate.service;
 
 import com.anish.flowstate.dto.RegisterRequest;
+import com.anish.flowstate.dto.UserResponse;
 import com.anish.flowstate.exception.UserAlreadyExistsException;
 import com.anish.flowstate.mapper.UserMapper;
 import com.anish.flowstate.model.User;
 import com.anish.flowstate.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +34,22 @@ public class UserService {
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
         );
-        user.setRole("USER");
+        user.setRole("ROLE_USER");
 
         return userRepository.save(user);
+    }
+
+    public User getCurrentUser() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
+    }
+
+    public UserResponse getCurrentUserResponse() {
+        User user = getCurrentUser();
+        return UserMapper.toResponse(user);
     }
 }
