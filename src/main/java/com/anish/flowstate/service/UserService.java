@@ -1,6 +1,7 @@
 package com.anish.flowstate.service;
 
 import com.anish.flowstate.dto.RegisterRequest;
+import com.anish.flowstate.dto.RoleUpdateRequest;
 import com.anish.flowstate.dto.UserResponse;
 import com.anish.flowstate.exception.UserAlreadyExistsException;
 import com.anish.flowstate.mapper.UserMapper;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -51,5 +54,28 @@ public class UserService {
     public UserResponse getCurrentUserResponse() {
         User user = getCurrentUser();
         return UserMapper.toResponse(user);
+    }
+
+    public List<UserResponse> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    public UserResponse changeRole(
+            Integer id,
+            RoleUpdateRequest request){
+        User user = getUser(id);
+        user.setRole(request.getRole());
+        userRepository.save(user);
+        return UserMapper.toResponse(user);
+    }
+
+    private User getUser(Integer id) {
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found."));
     }
 }
