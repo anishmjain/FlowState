@@ -5,6 +5,7 @@ import com.anish.flowstate.dto.RoleUpdateRequest;
 import com.anish.flowstate.dto.UserResponse;
 import com.anish.flowstate.exception.UserAlreadyExistsException;
 import com.anish.flowstate.mapper.UserMapper;
+import com.anish.flowstate.model.Role;
 import com.anish.flowstate.model.User;
 import com.anish.flowstate.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -37,7 +38,7 @@ public class UserService {
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
         );
-        user.setRole("ROLE_USER");
+        user.setRole(Role.ROLE_USER);
 
         return userRepository.save(user);
     }

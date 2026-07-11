@@ -1,16 +1,18 @@
 package com.anish.flowstate.dto;
 
+import com.anish.flowstate.model.Role;
+
 public class RoleUpdateRequest {
-    private String role;
+    private Role role;
 
     public RoleUpdateRequest() {
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }
