@@ -1,21 +1,19 @@
 package com.anish.flowstate.service;
 
-import com.anish.flowstate.dto.TaskRequest;
+import com.anish.flowstate.dto.TaskSearchCriteria;
 import com.anish.flowstate.exception.TaskNotFoundException;
 import com.anish.flowstate.mapper.TaskMapper;
 import com.anish.flowstate.model.Priority;
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.model.User;
 import com.anish.flowstate.repository.TaskRepository;
-import com.anish.flowstate.repository.UserRepository;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,10 +32,10 @@ public class TaskService {
         this.userService = userService;
     }
 
-    public Page<Task> getTasks(Priority priority, int page, int size){
+    public Page<Task> getTasks(TaskSearchCriteria criteria){
         User owner = userService.getCurrentUser();
-
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = buildPageable(criteria);
+        Priority priority = criteria.getPriority();
         if (priority == null) {
             logger.info("Fetching all tasks for {}", owner.getUsername());
             return taskRepository.findByOwner(owner,pageable);
@@ -46,6 +44,12 @@ public class TaskService {
                 priority,
                 owner.getUsername());
         return taskRepository.findByOwnerAndPriority(owner, priority, pageable);
+    }
+
+    private Pageable buildPageable(TaskSearchCriteria criteria) {
+        Sort.Direction sortDirection = Sort.Direction.fromString(criteria.getDirection());
+        return PageRequest.of(criteria.getPage(), criteria.getSize() ,
+                Sort.by(sortDirection, criteria.getSortBy()));
     }
 
     public Task createTask(Task task) {

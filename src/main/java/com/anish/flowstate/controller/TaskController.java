@@ -2,6 +2,7 @@ package com.anish.flowstate.controller;
 
 import com.anish.flowstate.dto.TaskRequest;
 import com.anish.flowstate.dto.TaskResponse;
+import com.anish.flowstate.dto.TaskSearchCriteria;
 import com.anish.flowstate.mapper.TaskMapper;
 import com.anish.flowstate.model.Priority;
 import com.anish.flowstate.model.Task;
@@ -27,8 +28,18 @@ public class TaskController{
     public Page<TaskResponse> getAllTasks(
             @RequestParam(required = false) Priority priority,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return taskService.getTasks(priority, page, size)
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria();
+        criteria.setPriority(priority);
+        criteria.setPage(page);
+        criteria.setSize(size);
+        criteria.setSortBy(sortBy);
+        criteria.setDirection(direction);
+
+        return taskService.getTasks(criteria)
                 .map(TaskMapper::toResponse);
     }
 
