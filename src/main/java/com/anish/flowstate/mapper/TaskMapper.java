@@ -11,7 +11,8 @@ public class TaskMapper {
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                task.isCompleted()
+                task.isCompleted(),
+                task.getPriority()
         );
     }
     public static Task toEntity(TaskRequest request){
@@ -21,6 +22,7 @@ public class TaskMapper {
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setCompleted(false);
+        task.setPriority(request.getPriority());
 
         return task;
 
@@ -30,5 +32,6 @@ public class TaskMapper {
     public static void updateEntity(Task existingTask, Task updatedTask) {
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
+        existingTask.setPriority(updatedTask.getPriority());
     }
 }

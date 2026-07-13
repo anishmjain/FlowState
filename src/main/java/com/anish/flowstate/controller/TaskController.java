@@ -3,9 +3,11 @@ package com.anish.flowstate.controller;
 import com.anish.flowstate.dto.TaskRequest;
 import com.anish.flowstate.dto.TaskResponse;
 import com.anish.flowstate.mapper.TaskMapper;
+import com.anish.flowstate.model.Priority;
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.service.TaskService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +24,12 @@ public class TaskController{
     }
 
     @GetMapping
-    public List<TaskResponse> getAllTasks() {
-        return  taskService.getAllTasks()
-                .stream()
-                .map(TaskMapper::toResponse)
-                .toList();
+    public Page<TaskResponse> getAllTasks(
+            @RequestParam(required = false) Priority priority,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return taskService.getTasks(priority, page, size)
+                .map(TaskMapper::toResponse);
     }
 
     @PostMapping

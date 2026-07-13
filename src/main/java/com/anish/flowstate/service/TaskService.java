@@ -3,18 +3,24 @@ package com.anish.flowstate.service;
 import com.anish.flowstate.dto.TaskRequest;
 import com.anish.flowstate.exception.TaskNotFoundException;
 import com.anish.flowstate.mapper.TaskMapper;
+import com.anish.flowstate.model.Priority;
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.model.User;
 import com.anish.flowstate.repository.TaskRepository;
 import com.anish.flowstate.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.mysql.cj.conf.PropertyKey.logger;
 
 @Service
 public class TaskService {
@@ -28,10 +34,18 @@ public class TaskService {
         this.userService = userService;
     }
 
-    public List<Task> getAllTasks() {
+    public Page<Task> getTasks(Priority priority, int page, int size){
         User owner = userService.getCurrentUser();
-        logger.info("Fetching tasks for {}", owner.getUsername());
-        return taskRepository.findByOwner(owner);
+
+        Pageable pageable = PageRequest.of(page, size);
+        if (priority == null) {
+            logger.info("Fetching all tasks for {}", owner.getUsername());
+            return taskRepository.findByOwner(owner,pageable);
+        }
+        logger.info("Fetching {} priority tasks for {}",
+                priority,
+                owner.getUsername());
+        return taskRepository.findByOwnerAndPriority(owner, priority, pageable);
     }
 
     public Task createTask(Task task) {

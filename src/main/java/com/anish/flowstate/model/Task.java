@@ -16,6 +16,7 @@ public class Task{
     @Size(max = 100, message = "Title cannot exceed 100 characters.")
     @Column(name = "FS_TITLE")
     public String title;
+
     @NotBlank(message = "Description cannot be empty.")
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     @Column(name = "FS_DESCRIPTION")
@@ -28,10 +29,15 @@ public class Task{
     @JoinColumn(name = "OWNER_ID" /*, nullable = false */)
     private User owner;
 
-    public Task(String title, String description, Boolean  completed) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Priority priority;
+
+    public Task(String title, String description, Boolean  completed, Priority priority) {
         this.title = title;
         this.description = description;
         this.completed = completed;
+        this.priority = priority;
     }
 
     public Task() {
@@ -81,6 +87,14 @@ public class Task{
         this.owner = owner;
     }
 
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     @java.lang.Override
     public java.lang.String toString() {
         return "Task{" +
@@ -88,6 +102,7 @@ public class Task{
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", completed=" + completed +
+                ", priority=" + priority +
                 '}';
     }
 }

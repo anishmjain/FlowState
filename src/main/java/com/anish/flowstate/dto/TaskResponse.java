@@ -1,20 +1,24 @@
 package com.anish.flowstate.dto;
 
+import com.anish.flowstate.model.Priority;
+
 public class TaskResponse {
 
     private Integer id;
     private String title;
     private String description;
     private boolean completed;
+    private Priority priority;
 
     public TaskResponse() {
     }
 
-    public TaskResponse(Integer id, String title, String description, boolean completed) {
+    public TaskResponse(Integer id, String title, String description, boolean completed,Priority priority) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.completed = completed;
+        this.priority = priority;
     }
 
     public Integer getId() {
@@ -47,5 +51,13 @@ public class TaskResponse {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }

@@ -1,5 +1,6 @@
 package com.anish.flowstate.dto;
 
+import com.anish.flowstate.model.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -14,6 +15,8 @@ public class TaskRequest {
     private String description;
 
     private boolean completed;
+
+    private Priority priority;
 
     public TaskRequest() {
     }
@@ -50,5 +53,13 @@ public class TaskRequest {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }
