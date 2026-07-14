@@ -7,7 +7,6 @@ import com.anish.flowstate.model.Priority;
 import com.anish.flowstate.model.Task;
 import com.anish.flowstate.model.User;
 import com.anish.flowstate.repository.TaskRepository;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
-import static com.mysql.cj.conf.PropertyKey.logger;
 
 @Service
 public class TaskService {
@@ -26,6 +24,9 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserService userService;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "title", "priority", "completed");
+
 
     public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
@@ -40,13 +41,15 @@ public class TaskService {
             logger.info("Fetching all tasks for {}", owner.getUsername());
             return taskRepository.findByOwner(owner,pageable);
         }
-        logger.info("Fetching {} priority tasks for {}",
-                priority,
-                owner.getUsername());
+        logger.info("Fetching {} priority tasks for {}", priority, owner.getUsername());
         return taskRepository.findByOwnerAndPriority(owner, priority, pageable);
     }
 
     private Pageable buildPageable(TaskSearchCriteria criteria) {
+
+        if (!ALLOWED_SORT_FIELDS.contains(criteria.getSortBy())) {
+            throw new IllegalArgumentException("Invalid sort field. Allowed values: " + ALLOWED_SORT_FIELDS);
+        }
         Sort.Direction sortDirection = Sort.Direction.fromString(criteria.getDirection());
         return PageRequest.of(criteria.getPage(), criteria.getSize() ,
                 Sort.by(sortDirection, criteria.getSortBy()));

@@ -4,6 +4,7 @@ import com.anish.flowstate.dto.RegisterRequest;
 import com.anish.flowstate.dto.RoleUpdateRequest;
 import com.anish.flowstate.dto.UserResponse;
 import com.anish.flowstate.exception.UserAlreadyExistsException;
+import com.anish.flowstate.exception.UserNotFoundException;
 import com.anish.flowstate.mapper.UserMapper;
 import com.anish.flowstate.model.Role;
 import com.anish.flowstate.model.User;
@@ -49,7 +50,7 @@ public class UserService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
+                .orElseThrow(() -> new UserNotFoundException("Authenticated user not found."));
     }
 
     public UserResponse getCurrentUserResponse() {
